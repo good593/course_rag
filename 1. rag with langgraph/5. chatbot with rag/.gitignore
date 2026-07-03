@@ -1,0 +1,10 @@
+# 환경 변수 파일
+.env
+
+# macOS
+.DS_Store
+
+.langgraph_api
+.venv 
+agent.egg-info
+

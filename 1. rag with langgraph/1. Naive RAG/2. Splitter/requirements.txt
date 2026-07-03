@@ -1,0 +1,7 @@
+jupyter==1.1.1                     # 주피터 노트북
+
+# LangChain 패키지
+langchain==1.0.2                           # LangChain 메인 패키지
+langchain-core==1.0.3                      # LangChain 코어 기능
+langchain-community==0.4.1                 # LangChain 커뮤니티 확장
+langchain-experimental==0.0.42              # 새로운 기능을 미리 사용해볼 수 있는 패키지

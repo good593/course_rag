@@ -1,0 +1,25 @@
+jupyter==1.1.1 # 주피터 노트북
+python-dotenv # 환경 변수 관리
+pandas       # 데이터 분석 패키지
+
+# LangChain 패키지
+langchain==1.0.8 # LangChain 메인 패키지
+langchain-core==1.1.0 # LangChain 코어 기능
+langchain-community==0.4.1 # LangChain 커뮤니티 확장
+langchain-experimental==0.4.0 # 새로운 기능을 미리 사용해볼 수 있는 패키지
+
+# 모델별 패키지
+langchain-openai==1.0.3 # OpenAI 모델 통합
+langchain-ollama==1.0.0 # Ollama 모델 통합
+
+# 벡터DB 패키지
+langchain-chroma==1.0.0
+
+# Loader 패키지 
+pdfplumber==0.11.8
+
+# 유사도 라이브러리 
+scikit-learn==1.7.2
+
+# 평가 패키지
+ragas==0.3.9

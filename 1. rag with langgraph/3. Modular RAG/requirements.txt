@@ -1,0 +1,24 @@
+jupyter==1.1.1              # 주피터 노트북
+python-dotenv==1.2.1        # 환경 변수 관리
+
+# LangChain 패키지 (1.x 버전 유지)
+langchain==1.0.8                        # LangChain 메인 패키지
+langchain-core==1.0.7                     # LangChain 코어 기능
+langchain-community==0.4.1                 # LangChain 커뮤니티 확장
+langgraph==1.0.3
+langsmith==0.4.46
+
+# 모델별 패키지
+langchain-ollama==1.0.0                    # Ollama 모델 통합
+langchain-openai==1.0.3                   # OpenAI 모델 통합 
+
+# VectorDB 패키지 
+# PostgreSQL + pgvector
+psycopg2-binary==2.9.11
+langchain-postgres==0.0.16
+# Elasticsearch
+elasticsearch==8.13.0
+
+# Tools 패키지
+langchain-tavily==0.2.12 #  AI가 웹 검색을 할 수 있게 해주는 도구
+

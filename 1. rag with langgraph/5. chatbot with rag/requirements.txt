@@ -1,0 +1,16 @@
+langgraph-cli[inmem]==0.3.3 # 랭그래프 클라이언트 라이브러리
+python-dotenv==1.1.1 # 환경변수를 파일(.env)로 관리하는 라이브러리
+streamlit==1.46.1 # 웹 애플리케이션 개발 라이브러리
+jupyter==1.1.1 # 데이터 분석 및 시각화 툴
+pandas==2.3.0 # 데이터 조작 및 분석 라이브러리
+langchain==0.3.26 # LLM을 이용한 애플리케이션 라이브러리 
+langchain-community==0.3.26 # 랭체인에서 사용한 올라마와 같은 서드파티 라이브러리 
+langchain-core==0.3.66 # 랭체인의 핵심 라이브러리
+langchain-openai==0.3.26 # 오픈AI의 라이브러리
+langchain-groq==0.3.4 # groq의 라이브러리
+faiss-cpu==1.11.0 # 벡터 검색 라이브러리
+tavily-python==0.7.8 # 웹 검색 라이브러리
+pymupdf==1.26.1 # 문서 처리 라이브러리
+
+
+
