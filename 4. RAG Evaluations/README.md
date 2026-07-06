@@ -10,50 +10,120 @@ marp: true
 paginate: true
 ---
 # RAG 서비스 평가
-
-이 폴더는 RAGAS를 이용해 RAG 서비스 평가 데이터셋을 만들고, RAG 답변을 생성한 뒤, 생성 품질과 검색 품질을 평가하는 강의자료입니다.
+> RAG 서비스는 단순한 LLM 서비스와 달리 "검색(Retrieval) + 생성(Generation)" 두 단계로 이루어져 있기 때문에, 어느 한 부분만 문제가 생겨도 전체 서비스 품질이 크게 떨어질 수 있습니다.
+> 따라서 객관적인 평가(Evaluation)를 통해 문제를 발견하고 지속적으로 개선해야 합니다.
 
 ---
-## 학습 흐름
+## RAG 서비스를 평가해야 하는 이유
 
-1. `1. RAGAs 이용해서 평가 데이터셋 생성.ipynb`
-   - PDF 문서를 로드하고 RAGAS 테스트셋을 생성합니다.
-   - 결과를 `data/evaluation_questions_for_ragas.csv`에 저장합니다.
+---
+### 1. 검색 품질이 답변 품질을 결정하기 때문
+RAG는 LLM이 스스로 답을 만드는 것이 아니라, 검색된 문서를 기반으로 답변을 생성합니다.
 
-2. `2. RAG 답변 데이터셋 생성.ipynb`
-   - PDF를 Chroma 벡터 DB에 저장합니다.
-   - `data/evaluation_questions_for_ragas.csv`의 질문을 RAG 체인에 넣어 답변과 검색 문맥을 생성합니다.
-   - RAGAS 0.3.9 평가 입력 컬럼명에 맞춰 `data/evaluation_answers_from_rag.csv`를 저장합니다.
-
-3. `3. RAGAs를 이용해서 RAG 평가.ipynb`
-   - `data/evaluation_answers_from_rag.csv`를 로드합니다.
-   - `answer_relevancy`, `faithfulness`, `context_recall`, `context_precision`을 계산합니다.
-   - 평가 점수를 하나의 표로 합치고, 낮은 점수 샘플을 확인해 검색 문제와 생성 문제를 구분합니다.
-   - 결과를 `data/evaluation_scores_from_ragas.csv`로 저장합니다.
-
-## 실행 준비
-
-Python 버전은 `.python-version`과 `pyproject.toml`에 맞춰 3.12를 사용합니다.
-
-```powershell
-uv sync
 ```
-
-`.env.example`을 참고해 `.env` 파일에 OpenAI API 키를 입력합니다.
-
-```text
-OPENAI_API_KEY="sk-..."
+질문
+   ↓
+문서 검색
+   ↓
+LLM 답변 생성
 ```
+검색이 잘못되면 LLM도 잘못된 답변을 생성할 가능성이 높습니다.
 
-2번 노트북은 로컬 Ollama 모델을 사용합니다. Ollama가 설치되어 있어야 하며, 아래 모델을 미리 내려받습니다.
+---
+예를 들어,
 
-```powershell
-ollama pull gemma3:4b
-```
+> 질문
+> "회사 휴가 정책은?"
 
-1번과 3번 노트북은 OpenAI API를 사용하므로 실행 시간과 API 비용이 발생할 수 있습니다. 강의 중에는 기본 데이터셋 10건으로 먼저 흐름을 확인한 뒤, 시간이 남으면 `testset_size`를 늘려 평가 표본을 확장합니다.
+검색 결과
 
-## RAGAS 0.3.9 평가 컬럼
+> ❌ 출장 규정
+
+LLM 답변
+
+> "출장은..."
+
+LLM 자체의 문제가 아니라 검색기의 문제입니다.
+
+---
+### 2. LLM이 그럴듯한 오답(Hallucination)을 생성할 수 있기 때문
+검색된 문서가 부족하거나 관련성이 낮으면 LLM은 부족한 정보를 추론하여 답변을 생성할 수 있습니다.
+
+예를 들어,
+
+질문
+
+> "환불 기간은?"
+
+검색 결과
+
+> 배송 정책
+
+LLM 답변
+
+> "환불은 30일입니다."
+
+실제 문서에는 30일이라는 내용이 없더라도 LLM이 자연스럽게 만들어낼 수 있습니다.
+
+---
+### 3. 검색은 잘 되었지만 답변 생성이 실패할 수도 있기 때문
+예를 들어,
+
+검색 결과
+
+> 환불은 구매 후 14일 이내 가능합니다.
+
+LLM 답변
+
+> 환불은 30일입니다.
+
+검색은 성공했지만, LLM이 문서를 제대로 활용하지 못한 것입니다.
+
+---
+### 4. 데이터가 계속 변경되기 때문
+RAG 서비스의 문서는 지속적으로 업데이트됩니다.
+
+예를 들어,
+
+- 새로운 사내 규정
+- 새로운 제품 설명서
+- 최신 뉴스
+- 새로운 법률
+
+문서가 바뀌면
+
+- 검색 성능
+- 답변 품질
+
+도 함께 변할 수 있습니다. 따라서 지속적인 평가가 필요합니다.
+
+---
+### 5. 서비스 개선 효과를 객관적으로 확인하기 위해
+
+예를 들어
+
+기존
+
+> Chunk Size : 1000
+
+변경
+
+> Chunk Size : 500
+
+정말 좋아졌는지는 감으로 판단할 수 없습니다.
+
+---
+평가 결과를 비교해야 합니다.
+
+| 변경 항목 | Faithfulness | Answer Relevancy |
+| ----- | -----------: | ---------------: |
+| 기존    |         0.82 |             0.78 |
+| 변경 후  |         0.91 |             0.89 |
+
+이처럼 수치 기반 평가를 통해 개선 여부를 확인할 수 있습니다.
+
+---
+# RAGAS 0.3.9 평가 컬럼
 
 이 자료에서는 RAGAS 0.3.9 기준 컬럼명을 사용합니다.
 
@@ -67,6 +137,7 @@ ollama pull gemma3:4b
 
 예전 예제에서 자주 보이는 `question`, `answer`, `contexts`, `ground_truth` 컬럼명은 RAGAS 0.3.9에서 평가 입력으로 자동 인식되지 않을 수 있으므로 사용하지 않습니다.
 
+---
 ## 평가 결과 해석
 
 평가 점수는 단일 평균만 보고 끝내지 않습니다. 낮은 점수 샘플을 직접 열어 보고, 어떤 단계가 병목인지 분리해서 판단합니다.
@@ -80,10 +151,11 @@ ollama pull gemma3:4b
 
 강의에서는 `data/evaluation_answers_from_rag.csv` 안의 실패 사례를 함께 봅니다. 예를 들어 FTC 질문은 참조 문맥에 정답이 있지만 RAG 답변이 정보 부족처럼 시작하므로, 점수와 사람이 보는 오류 유형이 어떻게 연결되는지 설명하기 좋습니다.
 
+
 ## 확장 실습 아이디어
 
 - `testset_size`를 10에서 30 이상으로 늘려 점수 분포를 비교합니다.
-- `SingleHopSpecificQuerySynthesizer` 외에 multi-hop, 조건형, 도메인 외 질문을 추가해 더 까다로운 평가셋을 만듭니다.
+- 1번 노트북처럼 `SingleHopSpecificQuerySynthesizer`에 multi-hop synthesizer와 조건형/도메인 외 hard case를 섞어 더 까다로운 평가셋을 만듭니다.
 - `retriever = vectorstore.as_retriever(search_kwargs={"k": 2})`, `k=4`, `k=8`처럼 검색 개수를 바꿔 `context_recall`과 `context_precision`의 trade-off를 확인합니다.
 - `chunk_size`와 `chunk_overlap`을 바꿔 같은 질문셋에서 평가 점수가 어떻게 달라지는지 비교합니다.
 - 전처리 전후의 문맥을 비교해 특수문자 제거가 평가에 주는 영향을 확인합니다.
