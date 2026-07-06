@@ -1,23 +1,35 @@
-﻿# RAG 서비스 평가
+﻿---
+style: |
+  img {
+    display: block;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+marp: true
+paginate: true
+---
+# RAG 서비스 평가
 
 이 폴더는 RAGAS를 이용해 RAG 서비스 평가 데이터셋을 만들고, RAG 답변을 생성한 뒤, 생성 품질과 검색 품질을 평가하는 강의자료입니다.
 
+---
 ## 학습 흐름
 
 1. `1. RAGAs 이용해서 평가 데이터셋 생성.ipynb`
    - PDF 문서를 로드하고 RAGAS 테스트셋을 생성합니다.
-   - 결과를 `data/evaluation_ragas.csv`에 저장합니다.
+   - 결과를 `data/evaluation_questions_for_ragas.csv`에 저장합니다.
 
 2. `2. RAG 답변 데이터셋 생성.ipynb`
    - PDF를 Chroma 벡터 DB에 저장합니다.
-   - `data/evaluation_ragas.csv`의 질문을 RAG 체인에 넣어 답변과 검색 문맥을 생성합니다.
-   - RAGAS 0.3.9 평가 입력 컬럼명에 맞춰 `data/evaluation_ragas_with_answer.csv`를 저장합니다.
+   - `data/evaluation_questions_for_ragas.csv`의 질문을 RAG 체인에 넣어 답변과 검색 문맥을 생성합니다.
+   - RAGAS 0.3.9 평가 입력 컬럼명에 맞춰 `data/evaluation_answers_from_rag.csv`를 저장합니다.
 
 3. `3. RAGAs를 이용해서 RAG 평가.ipynb`
-   - `data/evaluation_ragas_with_answer.csv`를 로드합니다.
+   - `data/evaluation_answers_from_rag.csv`를 로드합니다.
    - `answer_relevancy`, `faithfulness`, `context_recall`, `context_precision`을 계산합니다.
    - 평가 점수를 하나의 표로 합치고, 낮은 점수 샘플을 확인해 검색 문제와 생성 문제를 구분합니다.
-   - 결과를 `data/evaluation_scores.csv`로 저장합니다.
+   - 결과를 `data/evaluation_scores_from_ragas.csv`로 저장합니다.
 
 ## 실행 준비
 
@@ -66,7 +78,7 @@ ollama pull gemma3:4b
 | `faithfulness`가 낮음 | 답변이 검색 문맥 밖의 내용을 말함 | 프롬프트의 근거 사용 지시, LLM temperature, 답변 길이 |
 | `answer_relevancy`가 낮음 | 질문에 직접 답하지 않거나 불필요한 내용이 많음 | 프롬프트, 출력 형식, 질문 전처리 |
 
-강의에서는 `data/evaluation_ragas_with_answer.csv` 안의 실패 사례를 함께 봅니다. 예를 들어 FTC 질문은 참조 문맥에 정답이 있지만 RAG 답변이 정보 부족처럼 시작하므로, 점수와 사람이 보는 오류 유형이 어떻게 연결되는지 설명하기 좋습니다.
+강의에서는 `data/evaluation_answers_from_rag.csv` 안의 실패 사례를 함께 봅니다. 예를 들어 FTC 질문은 참조 문맥에 정답이 있지만 RAG 답변이 정보 부족처럼 시작하므로, 점수와 사람이 보는 오류 유형이 어떻게 연결되는지 설명하기 좋습니다.
 
 ## 확장 실습 아이디어
 
