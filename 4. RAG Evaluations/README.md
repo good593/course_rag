@@ -113,7 +113,6 @@ LLM 답변
 | A  | BM25              |
 | B  | Vector Search     |
 | C  | Hybrid Search     |
-| D  | Hybrid + Reranker |
 
 어떤 구성이 가장 좋은지는 평가 결과를 통해 결정해야 합니다.
 
